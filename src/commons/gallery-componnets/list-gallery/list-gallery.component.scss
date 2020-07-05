@@ -1,0 +1,9 @@
+.list-gallery {
+  display: flex;
+  flex-direction: row;
+  flex-flow: wrap;
+  .render-3 {
+    flex-direction: column;
+    margin: 0 5px;
+  }
+}
