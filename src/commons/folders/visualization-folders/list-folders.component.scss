@@ -2,41 +2,50 @@
   width: 350px;
 }
 /* all levels */
-.sitemap a {
+.tree-view-folders a {
   color: #000;
   text-decoration: none;
 }
 
 /* first level */
-.sitemap {
+.tree-view-folders {
   list-style-type: none;
   //background: url(dots1.png) repeat-y 0 0;
   padding: 0;
 }
 
-.sitemap li {
+.tree-view-folders li {
   display: inline;
 }
+::selection {
+  background: none;
+}
+.tree-view-folders li {
 
-.sitemap li a {
-  display: block;
-  padding: 0 0 0 55px;
-  margin: 0;
-  line-height: 4;
-  cursor: pointer;
-  background: url("../../../../public/assets/images/icons8-folder.svg") no-repeat 5px 2px;
-  //background: url(bullet1.png) no-repeat 0 0;
-  &.open {
-    background: url("../../../../public/assets/images/icons8-opened-folder.svg") no-repeat 5px 2px;
+  a {
+    display: block;
+    padding: 0 0 0 50px;
+    line-height: 3;
+    cursor: pointer;
+
+    & > img {
+      padding: 0 10px 0 10px;
+    }
+    &.folder {
+      padding: 0 0 0 55px;
+      margin: 0;
+      background: url("../../../../public/assets/images/icons8-folder.svg") no-repeat 5px 2px;
+
+      &.open {
+        background: url("../../../../public/assets/images/icons8-opened-folder.svg") no-repeat 5px 2px;
+      }
+    }
   }
 }
 
-//.sitemap li a.open { background: url(bullet1-open.png) no-repeat 0 0; }
 
 /* second level */
-.sitemap ul {
+.tree-view-folders ul {
   margin: 0 50px;
   padding: 0;
-  //background: url(dots2.png) repeat-y 30px 0;
 }
-//.sitemap li li li li a.open { background: url(bullet4-open.png) no-repeat 0 0; }

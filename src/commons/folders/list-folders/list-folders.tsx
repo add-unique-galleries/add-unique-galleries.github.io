@@ -1,11 +1,16 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
+import ListImages from "../list-images/list-images";
 
 interface IListFoldersProps {
     folders: Array<any>,
     openFolder: any,
     addIdOnFolderForTiger: any
 }
-
+interface IFile {
+    id: number,
+    label: string,
+    src: string
+}
 class ListFolders extends Component<IListFoldersProps> {
 
 
@@ -17,16 +22,18 @@ class ListFolders extends Component<IListFoldersProps> {
     }
 
     private treeView(folders: Array<any>) {
-        return (  <ul>
+        return (<ul>
             {folders.map((folder, index) => {
                 return (<li key={index}>
                     <a onContextMenu={this.props.addIdOnFolderForTiger} onClick={() => this.props.openFolder(folder.id)}
                        className={folder.classTarget}>{folder.label}</a>
                     {folder.folders.length > 0 && folder.isOpen && this.treeView(folder.folders)}
+                    {folder.isOpen && folder.files.map((file: IFile) => {
+                        return <ListImages key={index} file={file} />
+                    })}
                 </li>)
-            })
-            }
-        </ul>  )
+            }) }
+        </ul>)
     }
 }
 

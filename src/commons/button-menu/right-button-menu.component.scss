@@ -1,20 +1,28 @@
 .context {
   border: solid 1px #ccc;
-  display: inline-block;
+  display: block;
   margin: 5px;
-  background: #FFF;
-  color: #000;
+  background: #ccc;
+  color: #2d2d2d;
   font-family: sans-serif;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 15px;
   position: absolute;
 
   .context-item {
     border-bottom: dotted 1px #ccc;
     padding: 5px 25px;
+    &:hover {
+      color: #ccc;
+      background: #2d2d2d;
+    }
+    img {
+      width: 20px;
+    }
   }
 
   .context-item:last-child {
     padding: 5px 25px;
+
   }
 }
