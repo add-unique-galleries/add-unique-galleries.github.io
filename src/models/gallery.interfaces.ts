@@ -15,3 +15,9 @@ export interface IPhotosPixels {
         tiny: string
     }
 }
+export interface IPhotos {
+    id: number,
+    src: string,
+    photographer: string
+    label: string
+}

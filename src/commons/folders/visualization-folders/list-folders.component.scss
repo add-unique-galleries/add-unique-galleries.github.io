@@ -1,6 +1,6 @@
-.root-folder {
-  width: 350px;
-}
+//.root-folder {
+//  width: 350px;
+//}
 /* all levels */
 .tree-view-folders a {
   color: #000;
@@ -31,7 +31,7 @@
     & > img {
       padding: 0 10px 0 10px;
     }
-    &.folder {
+    &[class*="folder-"] {
       padding: 0 0 0 55px;
       margin: 0;
       background: url("../../../../public/assets/images/icons8-folder.svg") no-repeat 5px 2px;

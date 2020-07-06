@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+
 interface ICreateFolderProps {
     label: any
 }
@@ -12,18 +13,19 @@ class CreateFolderComponent extends Component<ICreateFolderProps, ICreateFolderS
         super(props);
         this.state = {folderName: ""}
     }
+
     render() {
         const {label} = this.props
         return (
-            <div>
+            <li>
                 <input type="text" onChange={this.changeValue.bind(this)}/>
                 <button type={"button"} onClick={() => label(this.state.folderName)}>Add</button>
-            </div>
+            </li>
         );
     }
 
     private changeValue(e: any) {
-        this.setState( {folderName: e.target.value})
+        this.setState({folderName: e.target.value})
     }
 }
 

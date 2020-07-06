@@ -10,9 +10,9 @@ class ListFoldersComponent extends Component<IListFoldersProps> {
         const context = document.getElementById('right-context')
         if (context) {
             context.addEventListener("click", (e: any) => {
-                if(e.target.title) {
+                if(e.target.title === "Add Image" || e.target.textContent === "Add Image") {
                     this.props.addImage()
-                } else if (e.target.textContent) {
+                } else if (e.target.textContent === "Create Folder" || e.target.title === "Create Folder") {
                     this.props.createFolder()
                 }
             })
@@ -34,8 +34,8 @@ function mapStateToProps(state: any) {
 }
 function mapDispatchToProps(dispatch: any) {
     return  {
-        createFolder: () => dispatch({type: 'CREATE_FOLDER', value: true}),
-        addImage: () => dispatch({type: 'ADD_IMAGE', value: true})
+        createFolder: () => dispatch({type: 'CREATE_FOLDER', value: {createFolder: true}}),
+        addImage: () => dispatch({type: 'ADD_IMAGE', value: {addImage: true}})
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(ListFoldersComponent);
