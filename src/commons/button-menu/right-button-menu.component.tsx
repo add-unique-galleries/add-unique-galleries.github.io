@@ -24,6 +24,7 @@ class RightButtonMenuComponent extends Component<{}, IRightButtonMenuComponentSt
                         {this.menuRender()}
                     </ul>
                 </div> : null}
+                {this.props.children}
             </div>
         );
     }

@@ -32,7 +32,6 @@ class GalleryComponent extends Component<{}, IGalleryState> {
     private searchItemOnPexelGalleryEvent = (searchText: string) => {
         GalleryService.searchOnGallery(searchText).then(res => res.json()).then((data: {photos: Array<IPhotosPixels>}) => {
             this.setState({galleryItems: data.photos})
-            console.log(this.state)
         })
     }
 }
