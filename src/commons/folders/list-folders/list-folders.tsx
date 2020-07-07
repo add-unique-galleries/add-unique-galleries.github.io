@@ -28,7 +28,7 @@ class ListFolders extends Component<IListFoldersProps> {
                        >{folder.label}</a>
                     {folder.folders.length > 0 && folder.isOpen && this.treeView(folder.folders)}
                     {folder.isOpen && folder.files.map((file: IPhotos) => {
-                        return <ListImages key={index} file={file} />
+                        return <ListImages key={index} file={file} files={folder.files}/>
                     })}
                 </li>)
 

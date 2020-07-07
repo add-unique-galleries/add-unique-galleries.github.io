@@ -1,0 +1,20 @@
+.container-gallery {
+  #gallery {
+    .prev-btn, .next-btn{
+      position: absolute;
+      top: 40%;
+      font-size: 20px;
+      border: 1px solid #ffffff;
+      padding: 5px 9px 9px 9px;
+      border-radius: 25px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .prev-btn {
+      left: -35px;
+    }
+    .next-btn {
+      right: -35px;
+    }
+  }
+}

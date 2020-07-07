@@ -63,6 +63,11 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
                             id: 3885948,
                             label: 'cat',
                             src: "https://images.pexels.com/photos/3885948/pexels-photo-3885948.jpeg?auto=compress&cs=tinysrgb&h=350"
+                        },
+                            {
+                            id: 991831,
+                            label: 'cat2',
+                            src: "https://images.pexels.com/photos/991831/pexels-photo-991831.jpeg?auto=compress&cs=tinysrgb&h=350"
                         }]
                     }],
                     files: []
