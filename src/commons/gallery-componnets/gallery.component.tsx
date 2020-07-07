@@ -7,8 +7,10 @@ import {IPhotos, IPhotosPixels} from "../../models/gallery.interfaces";
 import './gallery.component.scss'
 
 interface IGalleryProps {
-    returnImg: any
+    returnImg: any,
+    closeGallery: any
 }
+
 interface IGalleryState {
     galleryItems: Array<IPhotosPixels>,
     selectedImages: Array<IPhotos>
@@ -28,37 +30,41 @@ class GalleryComponent extends Component<IGalleryProps, IGalleryState> {
         const {returnImg} = this.props
         return (
             <div className="gallery">
-                <div className={'gallery-items'}>
-                    <SearchGalleryComponent
-                        searchItemOnPexelGalleryEvent={this.searchItemOnPexelGalleryEvent.bind(this)}/>
-                    <ListGalleryComponent photos={this.state.galleryItems}
-                                          selectImage={this.selectImagesOnGallery.bind(this)}/>
+                <a className="tag-remove"
+                   onClick={this.props.closeGallery}>X</a>
+                <div className="gallery-content">
+                    <div className={'gallery-items'}>
+                        <SearchGalleryComponent
+                            searchItemOnPexelGalleryEvent={this.searchItemOnPexelGalleryEvent.bind(this)}/>
+                        <ListGalleryComponent photos={this.state.galleryItems}
+                                              selectImage={this.selectImagesOnGallery.bind(this)}/>
 
-                </div>
-                <div className={'add-images'}>
-                    {this.state.selectedImages.length > 0 && (this.state.selectedImages.map((si, i) => (
-                            <div className={'gallery-item-3'} key={i}>
-                                <div className="header">
-                                    <img src={si.src} alt={si.photographer}/>
-                                    <a className="tag-remove" onClick={this.deleteOnListSelected.bind(this, si.id)}>X</a>
+                    </div>
+                    <div className={'add-images'}>
+                        {this.state.selectedImages.length > 0 && (this.state.selectedImages.map((si, i) => (
+                                <div className={'gallery-item-3'} key={i}>
+                                    <div className="header">
+                                        <img src={si.src} alt={si.photographer}/>
+                                        <a className="tag-remove"
+                                           onClick={this.deleteOnListSelected.bind(this, si.id)}>X</a>
+                                    </div>
+                                    <div>
+                                        <input type="text" placeholder={'Add name on picture'}
+                                               onChange={this.addPictureName.bind(this, si.id)}/>
+                                        <button type={"button"}
+                                                onClick={() => {
+                                                    returnImg(this.state.selectedImages.filter(img => img.id === si.id)[0], this.state.selectedImages.length);
+                                                    this.deleteOnListSelected(si.id)
+                                                }}
+                                        >Add Picture
+                                        </button>
+                                    </div>
                                 </div>
-                                <div>
-                                    <input type="text" placeholder={'Add name on picture'}
-                                           onChange={this.addPictureName.bind(this, si.id)}/>
-                                    <button type={"button"}
-                                            onClick={() => {
-                                                returnImg(this.state.selectedImages.filter(img => img.id === si.id)[0], this.state.selectedImages.length);
-                                                this.deleteOnListSelected(si.id)
-                                            }}
-                                    >Add Picture
-                                    </button>
-                                </div>
-                            </div>
-                        )
-                    ))}
+                            )
+                        ))}
+                    </div>
                 </div>
             </div>
-
         );
     }
 
@@ -67,6 +73,9 @@ class GalleryComponent extends Component<IGalleryProps, IGalleryState> {
      * @param searchText
      */
     private searchItemOnPexelGalleryEvent = (searchText: string) => {
+        if(searchText.length < 1) {
+            return
+        }
         GalleryService.searchOnGallery(searchText).then(res => res.json()).then((data: { photos: Array<IPhotosPixels> }) => {
             this.setState({galleryItems: data.photos})
         })

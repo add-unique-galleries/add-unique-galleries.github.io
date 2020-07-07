@@ -9,12 +9,27 @@
       border-radius: 25px;
       line-height: 1;
       cursor: pointer;
+
     }
     .prev-btn {
       left: -35px;
     }
     .next-btn {
       right: -35px;
+    }
+    .delete-image {
+      position: relative;
+      top: 30px;
+      left: 82%;
+      color: aliceblue;
+      background: #0002;
+      border: 1px solid red;
+      padding: 2px 13px;
+      border-radius: 7px;
+      cursor: pointer;
+      &:active {
+        top: 31px
+      }
     }
   }
 }

@@ -7,6 +7,7 @@ interface ICarouselGalleryProps {
     imageGallery: Array<IPhotos>,
     previousImage: any,
     nextImage: any,
+    deleteImageOnFolder: any
 }
 
 class CarouselGalleryComponent extends Component<ICarouselGalleryProps> {
@@ -15,6 +16,7 @@ class CarouselGalleryComponent extends Component<ICarouselGalleryProps> {
         return (
             <div className={'container-gallery'}>
                 <div id="gallery">
+                    <a className="delete-image" onClick={this.props.deleteImageOnFolder}>Delete</a>
                     <a onClick={this.props.previousImage} className={'prev-btn'}>{"<"}</a>
                     <a onClick={this.props.nextImage} className={'next-btn'}>{">"}</a>
                     {this.loadImages()}

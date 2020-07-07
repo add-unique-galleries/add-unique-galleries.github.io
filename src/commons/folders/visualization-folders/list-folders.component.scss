@@ -1,6 +1,9 @@
-//.root-folder {
-//  width: 350px;
-//}
+.root-folder {
+  min-width: 350px;
+  max-width: 960px;
+  margin: 0 auto;
+  overflow: auto;
+}
 /* all levels */
 .tree-view-folders a {
   color: #000;
@@ -24,10 +27,9 @@
 
   a {
     display: block;
-    padding: 0 0 0 50px;
+    margin: 0 50px;
     line-height: 3;
     cursor: pointer;
-
     & > img {
       padding: 0 10px 0 10px;
     }
@@ -47,5 +49,5 @@
 /* second level */
 .tree-view-folders ul {
   margin: 0 50px;
-  padding: 0;
+  padding: 0 ;
 }

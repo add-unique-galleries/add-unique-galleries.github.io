@@ -1,28 +1,46 @@
-import React, {Component, ReactDOM} from 'react';
-import ReactDom from 'react-dom'
+import React, {Component} from 'react';
+import {connect} from "react-redux";
 
 import './list-folders.component.scss'
 import RightButtonMenuComponent from "../../button-menu/right-button-menu.component";
 import CreateFolderComponent from "../create-folder/create-folder.component";
 import ListFolders from "../list-folders/list-folders";
-import {connect} from "react-redux";
+
 import GalleryComponent from "../../gallery-componnets/gallery.component";
 import {IPhotos} from "../../../models/gallery.interfaces";
 import ListImages from "../list-images/list-images";
+import {IFolderTreeModel} from "../../../models/folder-tree.model";
+import {
+    ADD_FOLDER,
+    ADD_IMAGE,
+    ADD_IMAGES,
+    CREATE_FOLDER,
+    REMOVE_IMAGE,
+    UPDATE_FOLDER
+} from "../../../redux/actions/types";
 
 interface IVisualizationFoldersProps {
     createFolder: boolean,
     addImage: boolean,
-    closeFolder: any,
-    closeImage: any
+    treeView: IFolderTreeModel,
+    closeFolderReducer: any,
+    closeImageReducer: any,
+    createFolderReducer: any,
+    updateFolderReducer: any,
+    addImageReducer: any,
+    updateImageReducer: any,
 }
 
 interface IVisualizationFoldersState {
-    isOpen: boolean,
-    classTarget: string,
-    folders: Array<any>
-    files: Array<IPhotos>
-
+    root: {
+        id: number,
+        label: string,
+        isOpen: boolean,
+        classTarget: string,
+        folders: Array<IFolderTreeModel>
+        files: Array<IPhotos>
+    }
+    searchElement: string | undefined
 }
 
 class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps, IVisualizationFoldersState> {
@@ -33,16 +51,22 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
     set items(value: number) {
         this._items = value;
     }
+
     private readonly refContextMenu: React.RefObject<RightButtonMenuComponent>;
     private _items: number = 0;
 
     constructor(props: IVisualizationFoldersProps) {
         super(props);
         this.state = {
-            isOpen: false,
-            classTarget: 'folder-0',
-            folders: [],
-            files: []
+            root: {
+                classTarget: "",
+                files: [],
+                folders: [],
+                id: 0,
+                isOpen: false,
+                label: ""
+            },
+            searchElement: ''
         }
         this.addMoreItems = this.addMoreItems.bind(this)
         this.openFolder = this.openFolder.bind(this)
@@ -51,8 +75,9 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
     }
 
     componentDidMount() {
+        this.setState({root: this.props.treeView})
         document.addEventListener("click", () => {
-            this.refContextMenu.current?.hideContextMenu()
+            this.refContextMenu.current?.hideContextMenu
         })
     }
 
@@ -64,38 +89,39 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
                 <ul className="tree-view-folders">
                     <li id={'parent-root'}>
                         <a onContextMenu={this.addIdOnFolderForTiger} onClick={this.openFolder.bind(this, 0)}
-                           className={this.state.classTarget}>root</a>
-
-                        {this.state.isOpen && <ListFolders folders={this.state.folders} openFolder={this.openFolder}
-                                                           addIdOnFolderForTiger={this.addIdOnFolderForTiger}
-                                                           addMoreItems={this.addMoreItems}/>}
-                        {
-                            this.state.isOpen &&
-                            this.state.files.map((file: IPhotos, index) => {
-                                return <ListImages key={index} file={file} files={this.state.files}/>
-                            })
-                        }
+                           className={this.state.root.classTarget}>{this.state.root.label}</a>
+                        {this.state.root.isOpen &&
+                        <ListFolders folders={this.state.root.folders} openFolder={this.openFolder}
+                                     addIdOnFolderForTiger={this.addIdOnFolderForTiger}
+                                     addMoreItems={this.addMoreItems}/>}
+                        {this.state.root.isOpen && <ListImages files={this.state.root.files}/>}
 
                     </li>
                     {this.props.createFolder && <CreateFolderComponent label={this.addMoreItems}/>}
-                    {this.props.addImage && <GalleryComponent returnImg={this.addImgOnCurrentDir.bind(this)}/>}
+                    {this.props.addImage && <GalleryComponent returnImg={this.addImgOnCurrentDir.bind(this)}  closeGallery={this.closeGallery.bind(this)}/>}
                 </ul>
             </div>
         );
     }
-
+    private closeGallery(e: any) {
+        e.preventDefault()
+        this.props.closeImageReducer()
+    }
     /**
      * Add Files On State
      * @param file
      * @param itemsEnd
      */
     private addImgOnCurrentDir(file: IPhotos, itemsEnd: number) {
-        if(this.checkIsIdExist(file.id, this.state.folders)) {
+        if (this.checkIsIdExist(file.id, this.state.root.folders)) {
             return
         }
-        this.getCurrentFolderAndAddItems('', 'file', file)
+        const fileState = this.getCurrentFolderAndAddItems('', 'file', file)
+
+        this.setState(fileState)
+        this.props.addImageReducer(fileState)
         if (itemsEnd) {
-            this.props.closeImage()
+            this.props.closeImageReducer()
         }
     }
 
@@ -107,11 +133,11 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
     private checkIsIdExist(search: number, arr: Array<any>) {
         let isExist = false
         arr.map((item) => {
-            if(isExist) {
+            if (isExist) {
                 return
             }
             return item.files.map((file: IPhotos) => {
-                if(file.id === search){
+                if (file.id === search) {
                     isExist = true
                 }
             })
@@ -126,19 +152,21 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
      */
     private openFolder(index: number) {
 
+        let statusCopy = Object.assign({}, this.state);
         if (index === 0) {
-            this.setState({
-                isOpen: !this.state.isOpen,
-                classTarget:
-                    (!this.state.isOpen ?
-                        `${this.state.classTarget} open` :
-                        this.state.classTarget.split(' ')[0])
-            })
+            statusCopy.root.isOpen= !this.state.root.isOpen;
+            statusCopy.root.classTarget = (this.state.root.isOpen ?
+                `${this.state.root.classTarget} open` :
+                this.state.root.classTarget.split(' ')[0])
+            this.setState(statusCopy)
+
         } else {
-            let itemsState = [...this.state.folders]
+            let itemsState = [...this.state.root.folders]
             const itemState = this.updateIsOpen(index, itemsState)
-            this.setState({folders: itemState})
+            statusCopy.root.folders = itemState
+            this.setState(statusCopy)
         }
+        this.props.updateFolderReducer(statusCopy.root)
     }
 
     /**
@@ -148,21 +176,21 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
      * @param label
      */
     private addFolderWithNameAndParams(search: string | undefined, arr: Array<any>, label: string): any {
-            arr.map((item) => {
-                if (item.classTarget === search) {
-                    const customId = this.lengthItems(arr) + 1
-                    item.folders.push({
-                        id: customId,
-                        label: label,
-                        classTarget: `folder-${customId}`,
-                        isOpen: false,
-                        folders: [],
-                        files: []
-                    })
-                }
-                if (item.folders) return this.addFolderWithNameAndParams(search, item.folders, label);
-            });
-            return arr
+        arr.map((item) => {
+            if (item.classTarget === search) {
+                const customId = this.lengthItems(arr) + 1
+                item.folders.push({
+                    id: customId,
+                    label: label,
+                    classTarget: `folder-${customId}`,
+                    isOpen: false,
+                    folders: [],
+                    files: []
+                })
+            }
+            if (item.folders) return this.addFolderWithNameAndParams(search, item.folders, label);
+        });
+        return arr
     }
 
     /**
@@ -182,7 +210,7 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
      * @param id
      * @param arr
      */
-    private updateIsOpen(id: number, arr: Array<any>): any {
+    private updateIsOpen(id: number, arr: Array<IFolderTreeModel>) {
         arr.map((item) => {
             if (item.id === id) {
                 item.isOpen = !item.isOpen
@@ -200,12 +228,13 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
      * @param folderName
      */
     private addMoreItems(folderName: string) {
-        if(!folderName.length) {
+        if (!folderName.length) {
             return
         }
-        this.getCurrentFolderAndAddItems(folderName, 'folder')
-
-        this.props.closeFolder()
+        const folderState = this.getCurrentFolderAndAddItems(folderName, 'folder', {} as IPhotos)
+        this.setState(folderState)
+        this.props.createFolderReducer(folderState)
+        this.props.closeFolderReducer()
     }
 
     /**
@@ -214,13 +243,14 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
      * @param file
      * @param target
      */
-    private getCurrentFolderAndAddItems(folderName: string, target: string, file?: IPhotos) {
-        const searchElement =
-            document.getElementById('add-event')?.children[0].className
-        if(target === 'folder') {
-            if(searchElement === 'folder-0') {
-                const customId = this.lengthItems(this.state.folders) + 1
-                this.state.folders.push({
+    private getCurrentFolderAndAddItems(folderName: string, target: string, file: IPhotos) {
+
+        let statusCopy = Object.assign({}, this.state);
+        if (target === 'folder') {
+
+            if (this.state.searchElement && this.state.searchElement.split(' ')[0] === 'folder-0') {
+                const customId = this.lengthItems(this.state.root.folders) + 1
+                statusCopy.root.folders.push({
                     id: customId,
                     label: folderName,
                     classTarget: `folder-${customId}`,
@@ -228,23 +258,23 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
                     folders: [],
                     files: []
                 })
-                this.setState({folders: this.state.folders})
             } else {
-                this.setState({folders: this.addFolderWithNameAndParams(searchElement,
-                    this.state.folders,
-                    folderName)})
+                statusCopy.root.folders = this.addFolderWithNameAndParams(this.state.searchElement,
+                    this.state.root.folders,
+                    folderName)
+
             }
         } else {
-            if(searchElement === 'folder-0') {
-                // @ts-ignore
-                this.state.files.push(file)
-
-                this.setState({files: this.state.files})
+            if (this.state.searchElement && this.state.searchElement.split(' ')[0] === 'folder-0') {
+                statusCopy.root.files.push(file)
             } else {
-                this.setState({folders: this.addFilesWithParams(searchElement, this.state.folders, file)})
+                statusCopy.root.folders = this.addFilesWithParams(this.state.searchElement, this.state.root.folders, file)
+
             }
         }
+        return statusCopy
     }
+
     /**
      * Check current folder context open
      * @param e
@@ -257,6 +287,7 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
             prevElm.id = ''
         }
         e.target.parentElement.id = 'add-event'
+        this.setState({searchElement: document.getElementById('add-event')?.children[0].className})
         this.refContextMenu.current?.showContextMenu(e)
     }
 
@@ -271,6 +302,7 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
             if (item.classTarget === search) {
                 item.files.push(file)
             }
+            console.log(item.classTarget, search)
             if (item.folders) return this.addFilesWithParams(search, item.folders, file);
         });
         return folders
@@ -278,15 +310,23 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
 }
 
 function mapStateToProps(state: any) {
+    console.log(state)
     return {
         addImage: state.documentRedux.addImage,
-        createFolder: state.documentRedux.createFolder
+        createFolder: state.documentRedux.createFolder,
+        treeView: state.fileStorageRedux
     };
 }
+
 function mapDispatchToProps(dispatch: any) {
-    return  {
-        closeFolder: () => dispatch({type: 'CREATE_FOLDER', value: {createFolder: false}}),
-        closeImage: () => dispatch({type: 'CREATE_FOLDER', value: {addImage: false}})
+    return {
+        closeFolderReducer: () => dispatch({type: CREATE_FOLDER, value: {createFolder: false}}),
+        closeImageReducer: () => dispatch({type: ADD_IMAGE, value: {addImage: false}}),
+        createFolderReducer: (folders: IFolderTreeModel) => dispatch({type: ADD_FOLDER, value: folders}),
+        updateFolderReducer: (folders: IFolderTreeModel) => dispatch({type: UPDATE_FOLDER, value: folders}),
+        addImageReducer: (files: Array<IPhotos>) => dispatch({type: ADD_IMAGES, value: files}),
+        updateImageReducer: (file: IPhotos) => dispatch({type: REMOVE_IMAGE, value: file}),
     }
 }
+
 export default connect(mapStateToProps, mapDispatchToProps)(VisualizationFoldersComponent);

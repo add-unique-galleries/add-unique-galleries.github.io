@@ -10,7 +10,9 @@ interface IListGalleryProps {
 }
 
 class ListGalleryComponent extends Component<IListGalleryProps> {
-
+    /**
+     * Render Images on gallery choose
+     */
     renderImages() {
         const {photos, selectImage} = this.props
         if (photos.length > 0) {

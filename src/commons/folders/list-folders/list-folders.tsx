@@ -20,17 +20,18 @@ class ListFolders extends Component<IListFoldersProps> {
         );
     }
 
+    /**
+     * Render folders on current open folder and files
+     * @param folders
+     */
     private treeView(folders: Array<any>) {
-        console.log(folders)
         return (<ul>
             {folders.map((folder, index) => {
-                return (<li id={'parent-' + index} key={index} >
+                return (<li id={'parent-' + index} key={Math.random()} >
                     <a className={folder.classTarget} onContextMenu={this.props.addIdOnFolderForTiger} onClick={() => this.props.openFolder(folder.id)}
                        >{folder.label}</a>
                     {folder.folders.length > 0 && folder.isOpen && this.treeView(folder.folders)}
-                    {folder.isOpen && folder.files.map((file: IPhotos) => {
-                        return <ListImages key={index} file={file} files={folder.files}/>
-                    })}
+                    {folder.isOpen &&  <ListImages files={folder.files}/>}
                 </li>)
 
             }) }

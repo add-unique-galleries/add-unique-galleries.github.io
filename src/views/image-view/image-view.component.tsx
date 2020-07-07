@@ -30,7 +30,8 @@ class ImageViewComponent extends Component<IImageViewProps> {
                             selectedImageId={selectedImage.id}
                             imageGallery={arrCurrentFolderPictures}
                             previousImage={this.previousImage.bind(this)}
-                            nextImage={this.nextImage.bind(this)}/>}
+                            nextImage={this.nextImage.bind(this)}
+                            deleteImageOnFolder={this.removeImageOnGallery.bind(this)}/>}
                     </div>
                 </div>}
             </div>
@@ -58,6 +59,10 @@ class ImageViewComponent extends Component<IImageViewProps> {
 
     private closeImage() {
         this.props.closeCarousel(imageViewInitState)
+    }
+
+    private removeImageOnGallery(file: IPhotos) {
+    //    TODO:
     }
 }
 

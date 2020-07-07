@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import './search-gallery-component.scss'
+import './search-gallery.component.scss'
 
 interface ISearchProps {
     searchItemOnPexelGalleryEvent: any
@@ -22,7 +22,7 @@ class SearchGalleryComponent extends Component<ISearchProps, ISearchState> {
         return (
             <div className={'search-view'}>
                 <div>
-                    <input type="text" className={'search-input-text'} onChange={evn => this.updateValue(evn)}/>
+                    <input type="text" className={'search-input-text'} onChange={evn => this.updateValue(evn)} placeholder={'Type text for search'}/>
                     <button type={"submit"} className={'search-button'} onClick={() => searchItemOnPexelGalleryEvent(this.state.textPexelsSearch)}>Search</button>
                 </div>
             </div>

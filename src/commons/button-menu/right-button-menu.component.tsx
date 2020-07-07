@@ -41,7 +41,8 @@ class RightButtonMenuComponent extends Component<{}, IRightButtonMenuComponentSt
         this.setState({visible: true, x: clintX, y: clintY})
     }
 
-    hideContextMenu() {
+    hideContextMenu(e: any) {
+        e.preventDefault()
         this.setState({visible: false, x: 0, y: 0})
     }
     private menuRender () {
