@@ -2,14 +2,10 @@ import React, {Component} from 'react';
 
 import './list-image.scss'
 import {connect} from "react-redux";
+import {IPhotos} from "../../../models/gallery.interfaces";
 interface IListImagesProps {
-    file: IFile,
+    file: IPhotos,
     openImage: any
-}
-interface IFile {
-    id: number,
-    label: string,
-    src: string
 }
 class ListImages extends Component<IListImagesProps> {
     render() {
@@ -19,7 +15,7 @@ class ListImages extends Component<IListImagesProps> {
         );
     }
 
-    private openImage(file: IFile) {
+    private openImage(file: IPhotos) {
         this.props.openImage(file)
     }
 }
@@ -28,7 +24,7 @@ function mapStateToProps(state: any) {
 }
 function mapDispatchToProps(dispatch: any) {
     return  {
-        openImage: (src: IFile) => dispatch({type: 'IMAGE_VIEW_OPEN', value: src})
+        openImage: (src: IPhotos) => dispatch({type: 'IMAGE_VIEW_OPEN', value: src})
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(ListImages);

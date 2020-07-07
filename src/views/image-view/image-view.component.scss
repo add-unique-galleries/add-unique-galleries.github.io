@@ -1,0 +1,42 @@
+.carousel {
+  width: 0;
+  height: 0;
+  background: transparent;
+
+  &.open {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background: #0004;
+    top: 0;
+    left: 0;
+    transition: height .25s ease-in-out;
+    .tag-remove {
+      position: absolute;
+      right: 25px;
+      top: 10px;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 600;
+      border: 1px solid #fff;
+      padding: 4px 7px;
+      border-radius: 25px;
+      cursor: pointer;
+      &:hover {
+        color: #aa0000;
+      }
+    }
+  }
+  .content-carousel {
+    position: relative;
+    margin: 0 auto;
+    max-width: 500px;
+    top: 10%;
+    padding: 5px;
+    img {
+      width: 100%;
+      transition: width .25s ease-in-out;
+    }
+
+  }
+}

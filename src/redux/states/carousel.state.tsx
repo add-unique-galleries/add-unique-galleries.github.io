@@ -1,8 +1,8 @@
 import {IPhotos} from "../../models/gallery.interfaces";
 
-export const imageViewInitState: IPhotos = {
+export const carouselInitState: Array<IPhotos> = [{
     id: 0,
-    photographer: "",
     src: '',
+    photographer: '',
     label: ''
-}
+}]

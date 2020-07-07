@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import ListImages from "../list-images/list-images";
 import CreateFolderComponent from "../create-folder/create-folder.component";
+import {IPhotos} from "../../../models/gallery.interfaces";
 
 interface IListFoldersProps {
     folders: Array<any>,
@@ -8,11 +9,7 @@ interface IListFoldersProps {
     addIdOnFolderForTiger: any
     addMoreItems: any
 }
-interface IFile {
-    id: number,
-    label: string,
-    src: string
-}
+
 class ListFolders extends Component<IListFoldersProps> {
 
 
@@ -30,7 +27,7 @@ class ListFolders extends Component<IListFoldersProps> {
                     <a className={folder.classTarget} onContextMenu={this.props.addIdOnFolderForTiger} onClick={() => this.props.openFolder(folder.id)}
                        >{folder.label}</a>
                     {folder.folders.length > 0 && folder.isOpen && this.treeView(folder.folders)}
-                    {folder.isOpen && folder.files.map((file: IFile) => {
+                    {folder.isOpen && folder.files.map((file: IPhotos) => {
                         return <ListImages key={index} file={file} />
                     })}
                 </li>)

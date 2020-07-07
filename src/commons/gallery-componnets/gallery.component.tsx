@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
 import SearchGalleryComponent from "./serch-gallery/search-gallery.component";
 import GalleryService from "../../services/gallery/gallery.service";
 import ListGalleryComponent from "./list-gallery/list-gallery.component";
@@ -7,9 +6,6 @@ import {IPhotos, IPhotosPixels} from "../../models/gallery.interfaces";
 
 import './gallery.component.scss'
 
-function mapStateToProps(state: any) {
-    return {};
-}
 interface IGalleryProps {
     returnImg: any
 }
@@ -66,26 +62,43 @@ class GalleryComponent extends Component<IGalleryProps, IGalleryState> {
         );
     }
 
+    /**
+     * Search on Pexels
+     * @param searchText
+     */
     private searchItemOnPexelGalleryEvent = (searchText: string) => {
         GalleryService.searchOnGallery(searchText).then(res => res.json()).then((data: { photos: Array<IPhotosPixels> }) => {
             this.setState({galleryItems: data.photos})
         })
     }
 
+    /**
+     * Select images on gallery
+     * @param file
+     */
     private selectImagesOnGallery(file: IPhotos) {
         this.state.selectedImages.push({...file})
         this.setState({selectedImages: this.state.selectedImages})
 
     }
 
+    /**
+     * Add current picture name
+     * @param id
+     * @param e
+     */
     private addPictureName(id: number, e: any) {
         this.state.selectedImages.filter(img => img.id === id)[0].label = e.target.value
         this.setState({selectedImages: this.state.selectedImages})
     }
 
+    /**
+     * Delete Picture by id
+     * @param id
+     */
     private deleteOnListSelected(id: number) {
         this.setState({selectedImages: this.state.selectedImages.filter(img => img.id !== id)})
     }
 }
 
-export default connect(mapStateToProps,)(GalleryComponent);
+export default GalleryComponent;
