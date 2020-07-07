@@ -21,6 +21,7 @@ class ListFolders extends Component<IListFoldersProps> {
     }
 
     private treeView(folders: Array<any>) {
+        console.log(folders)
         return (<ul>
             {folders.map((folder, index) => {
                 return (<li id={'parent-' + index} key={index} >

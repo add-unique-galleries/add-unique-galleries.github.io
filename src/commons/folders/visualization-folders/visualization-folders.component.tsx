@@ -8,6 +8,7 @@ import ListFolders from "../list-folders/list-folders";
 import {connect} from "react-redux";
 import GalleryComponent from "../../gallery-componnets/gallery.component";
 import {IPhotos} from "../../../models/gallery.interfaces";
+import ListImages from "../list-images/list-images";
 
 interface IVisualizationFoldersProps {
     createFolder: boolean,
@@ -20,7 +21,7 @@ interface IVisualizationFoldersState {
     isOpen: boolean,
     classTarget: string,
     folders: Array<any>
-    files: Array<string>
+    files: Array<IPhotos>
 
 }
 
@@ -40,46 +41,7 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
         this.state = {
             isOpen: false,
             classTarget: 'folder-0',
-            folders: [
-                {
-                    id: 1,
-                    label: 'first',
-                    classTarget: 'folder-1',
-                    isOpen: false,
-                    folders: [{
-                        id: 3,
-                        label: 'tree',
-                        classTarget: 'folder-3',
-                        isOpen: false,
-                        folders: [{
-                            id: 4,
-                            label: 'fore',
-                            classTarget: 'folder-4',
-                            isOpen: false,
-                            folders: [],
-                            files: []
-                        }],
-                        files: [{
-                            id: 3885948,
-                            label: 'cat',
-                            src: "https://images.pexels.com/photos/3885948/pexels-photo-3885948.jpeg?auto=compress&cs=tinysrgb&h=350"
-                        },
-                            {
-                            id: 991831,
-                            label: 'cat2',
-                            src: "https://images.pexels.com/photos/991831/pexels-photo-991831.jpeg?auto=compress&cs=tinysrgb&h=350"
-                        }]
-                    }],
-                    files: []
-                }, {
-                    id: 2,
-                    label: 'sec',
-                    classTarget: 'folder-2',
-                    isOpen: false,
-                    folders: [],
-                    files: []
-                }
-            ],
+            folders: [],
             files: []
         }
         this.addMoreItems = this.addMoreItems.bind(this)
@@ -107,6 +69,12 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
                         {this.state.isOpen && <ListFolders folders={this.state.folders} openFolder={this.openFolder}
                                                            addIdOnFolderForTiger={this.addIdOnFolderForTiger}
                                                            addMoreItems={this.addMoreItems}/>}
+                        {
+                            this.state.isOpen &&
+                            this.state.files.map((file: IPhotos, index) => {
+                                return <ListImages key={index} file={file} files={this.state.files}/>
+                            })
+                        }
 
                     </li>
                     {this.props.createFolder && <CreateFolderComponent label={this.addMoreItems}/>}
@@ -125,8 +93,7 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
         if(this.checkIsIdExist(file.id, this.state.folders)) {
             return
         }
-        const updateState = this.getCurrentFolderAndAddItems('', 'file', file)
-        this.setState({folders: updateState})
+        this.getCurrentFolderAndAddItems('', 'file', file)
         if (itemsEnd) {
             this.props.closeImage()
         }
@@ -181,21 +148,21 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
      * @param label
      */
     private addFolderWithNameAndParams(search: string | undefined, arr: Array<any>, label: string): any {
-        arr.map((item) => {
-            if (item.classTarget === search) {
-                const customId= this.lengthItems(arr) + 1
-                item.folders.push({
-                    id: customId,
-                    label: label,
-                    classTarget: `folder-${customId}`,
-                    isOpen: false,
-                    folders: [],
-                    files: []
-                })
-            }
-            if (item.folders) return this.addFolderWithNameAndParams(search, item.folders, label);
-        });
-        return arr
+            arr.map((item) => {
+                if (item.classTarget === search) {
+                    const customId = this.lengthItems(arr) + 1
+                    item.folders.push({
+                        id: customId,
+                        label: label,
+                        classTarget: `folder-${customId}`,
+                        isOpen: false,
+                        folders: [],
+                        files: []
+                    })
+                }
+                if (item.folders) return this.addFolderWithNameAndParams(search, item.folders, label);
+            });
+            return arr
     }
 
     /**
@@ -236,8 +203,8 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
         if(!folderName.length) {
             return
         }
-        let updateItems =this.getCurrentFolderAndAddItems(folderName, 'folder')
-            this.setState({folders: updateItems})
+        this.getCurrentFolderAndAddItems(folderName, 'folder')
+
         this.props.closeFolder()
     }
 
@@ -247,15 +214,35 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
      * @param file
      * @param target
      */
-    private getCurrentFolderAndAddItems(folderName: string, target: string, file?: IPhotos,) {
+    private getCurrentFolderAndAddItems(folderName: string, target: string, file?: IPhotos) {
         const searchElement =
             document.getElementById('add-event')?.children[0].className
         if(target === 'folder') {
-            return this.addFolderWithNameAndParams(searchElement,
-                this.state.folders,
-                folderName)
+            if(searchElement === 'folder-0') {
+                const customId = this.lengthItems(this.state.folders) + 1
+                this.state.folders.push({
+                    id: customId,
+                    label: folderName,
+                    classTarget: `folder-${customId}`,
+                    isOpen: false,
+                    folders: [],
+                    files: []
+                })
+                this.setState({folders: this.state.folders})
+            } else {
+                this.setState({folders: this.addFolderWithNameAndParams(searchElement,
+                    this.state.folders,
+                    folderName)})
+            }
         } else {
-            return this.addFilesWithParams(searchElement, this.state.folders, file)
+            if(searchElement === 'folder-0') {
+                // @ts-ignore
+                this.state.files.push(file)
+
+                this.setState({files: this.state.files})
+            } else {
+                this.setState({folders: this.addFilesWithParams(searchElement, this.state.folders, file)})
+            }
         }
     }
     /**

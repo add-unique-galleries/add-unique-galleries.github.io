@@ -20,7 +20,6 @@ class ImageViewComponent extends Component<IImageViewProps> {
 
     render() {
         const {selectedImage, arrCurrentFolderPictures} = this.props
-        console.log(selectedImage, arrCurrentFolderPictures)
         return (
             <div>
                 {selectedImage.src &&
@@ -63,7 +62,6 @@ class ImageViewComponent extends Component<IImageViewProps> {
 }
 
 function mapStateToProps(state: any) {
-    console.log(state)
     return {
         selectedImage: state.imageViewRedux,
         arrCurrentFolderPictures: state.carouselRedux
