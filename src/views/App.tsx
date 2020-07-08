@@ -14,6 +14,7 @@ class App extends React.Component {
             <Provider store={store}>
                 <PersistGate loading={null} persistor={persistor}>
                     <h1>Gallery tree view</h1>
+                    <hr/>
                     <ListFoldersComponent/>
                     <ImageViewComponent/>
                 </PersistGate>

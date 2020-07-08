@@ -19,7 +19,7 @@ import {
     UPDATE_FOLDER
 } from "../../../redux/actions/types";
 
-interface IVisualizationFoldersProps {
+interface ICommonsFoldersProps {
     createFolder: boolean,
     addImage: boolean,
     treeView: IFolderTreeModel,
@@ -31,7 +31,7 @@ interface IVisualizationFoldersProps {
     updateImageReducer: any,
 }
 
-interface IVisualizationFoldersState {
+interface ICommonsFoldersState {
     root: {
         id: number,
         label: string,
@@ -40,10 +40,11 @@ interface IVisualizationFoldersState {
         folders: Array<IFolderTreeModel>
         files: Array<IPhotos>
     }
-    searchElement: string | undefined
+    searchElement: string | undefined,
+    dragId: string
 }
 
-class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps, IVisualizationFoldersState> {
+class CommonsFoldersComponent extends Component<ICommonsFoldersProps, ICommonsFoldersState> {
     get items(): number {
         return this._items;
     }
@@ -54,8 +55,7 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
 
     private readonly refContextMenu: React.RefObject<RightButtonMenuComponent>;
     private _items: number = 0;
-
-    constructor(props: IVisualizationFoldersProps) {
+    constructor(props: ICommonsFoldersProps) {
         super(props);
         this.state = {
             root: {
@@ -66,11 +66,16 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
                 isOpen: false,
                 label: ""
             },
-            searchElement: ''
+            searchElement: '',
+            dragId: ''
         }
         this.addMoreItems = this.addMoreItems.bind(this)
         this.openFolder = this.openFolder.bind(this)
         this.addIdOnFolderForTiger = this.addIdOnFolderForTiger.bind(this)
+        this.dragFolderStart = this.dragFolderStart.bind(this)
+        this.dragFolderEnd = this.dragFolderEnd.bind(this)
+        this.dragFolderEnter = this.dragFolderEnter.bind(this)
+        this.dragFolderLeave = this.dragFolderLeave.bind(this)
         this.refContextMenu = React.createRef();
     }
 
@@ -89,24 +94,37 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
                 <ul className="tree-view-folders">
                     <li id={'parent-root'}>
                         <a onContextMenu={this.addIdOnFolderForTiger} onClick={this.openFolder.bind(this, 0)}
-                           className={this.state.root.classTarget}>{this.state.root.label}</a>
+                           className={this.state.root.classTarget}
+                           draggable={"false"}
+                           onDragStart={event => {
+                               event.preventDefault();
+                               return false
+                           }}
+                           onDragEnd={this.dragFolderEnd}
+                           onDragLeave={this.dragFolderLeave} onDragEnter={this.dragFolderEnter}
+                        ><span>{this.state.root.label}</span></a>
                         {this.state.root.isOpen &&
                         <ListFolders folders={this.state.root.folders} openFolder={this.openFolder}
                                      addIdOnFolderForTiger={this.addIdOnFolderForTiger}
-                                     addMoreItems={this.addMoreItems}/>}
+                                     addMoreItems={this.addMoreItems}
+                                     dragEnd={this.dragFolderEnd} dragEnter={this.dragFolderEnter}
+                                     dragLeave={this.dragFolderLeave} dragStart={this.dragFolderStart}/>}
                         {this.state.root.isOpen && <ListImages files={this.state.root.files}/>}
 
                     </li>
                     {this.props.createFolder && <CreateFolderComponent label={this.addMoreItems}/>}
-                    {this.props.addImage && <GalleryComponent returnImg={this.addImgOnCurrentDir.bind(this)}  closeGallery={this.closeGallery.bind(this)}/>}
+                    {this.props.addImage && <GalleryComponent returnImg={this.addImgOnCurrentDir.bind(this)}
+                                                              closeGallery={this.closeGallery.bind(this)}/>}
                 </ul>
             </div>
         );
     }
+
     private closeGallery(e: any) {
         e.preventDefault()
         this.props.closeImageReducer()
     }
+
     /**
      * Add Files On State
      * @param file
@@ -154,7 +172,7 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
 
         let statusCopy = Object.assign({}, this.state);
         if (index === 0) {
-            statusCopy.root.isOpen= !this.state.root.isOpen;
+            statusCopy.root.isOpen = !this.state.root.isOpen;
             statusCopy.root.classTarget = (this.state.root.isOpen ?
                 `${this.state.root.classTarget} open` :
                 this.state.root.classTarget.split(' ')[0])
@@ -178,7 +196,7 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
     private addFolderWithNameAndParams(search: string | undefined, arr: Array<any>, label: string): any {
         arr.map((item) => {
             if (item.classTarget === search) {
-                const customId = this.lengthItems(arr) + 1
+                const customId = Number(Math.random().toString().split('.')[1])
                 item.folders.push({
                     id: customId,
                     label: label,
@@ -192,19 +210,6 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
         });
         return arr
     }
-
-    /**
-     * Check for unique id for folder
-     * @param arr
-     */
-    private lengthItems(arr: Array<any>) {
-        arr.map(a => {
-            this._items++
-            if (a.folders) return this.lengthItems(a.folders)
-        })
-        return this._items
-    }
-
     /**
      * Update state open folder
      * @param id
@@ -249,11 +254,11 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
         if (target === 'folder') {
 
             if (this.state.searchElement && this.state.searchElement.split(' ')[0] === 'folder-0') {
-                const customId = this.lengthItems(this.state.root.folders) + 1
+                const generateId = Number(Math.random().toString().split('.')[1])
                 statusCopy.root.folders.push({
-                    id: customId,
+                    id: generateId,
                     label: folderName,
-                    classTarget: `folder-${customId}`,
+                    classTarget: `folder-${generateId}`,
                     isOpen: false,
                     folders: [],
                     files: []
@@ -307,6 +312,68 @@ class VisualizationFoldersComponent extends Component<IVisualizationFoldersProps
         });
         return folders
     }
+
+    private dragFolderStart(e: any) {
+
+        console.log(e.target.className, 'start')
+
+        setTimeout(() => this.setState({dragId: e.target.className.split(' ')[0].split('-')[1]}), 0)
+        // this.state.dragId =
+    }
+
+    private dragFolderEnd(e: any) {
+        console.log(e.target, 'end')
+        // this.setState({dragId:  e.target.className.split(' ')[0].split('-')[1]})
+        // console.log(e.target, 'end' , this.state.dragId)
+        setTimeout(() => {
+            const currentFolderToDrop = this.state.root.folders.filter(function f(root): any {
+                if (root.id === Number(e.target.className.split(' ')[0].split('-')[1])) return true
+                if (root.folders.length) {
+                    return root.folders = root.folders.filter(f)
+                }
+            })[0]
+            const that = this
+            const currentFolderDrag = this.state.root.folders.filter(function f(root): any {
+                if (root.id === Number(that.state.dragId)) return true
+                if (root.folders.length) {
+                    return root.folders = root.folders.filter(f)
+                }
+            })[0]
+            let statusCopy = Object.assign({}, this.state);
+            statusCopy.root.folders = this.state.root.folders.filter(function f(root): any {
+                if (root.id !== Number(that.state.dragId)) return true
+                if (root.folders.length) {
+                    return root.folders = root.folders.filter(f)
+                }
+            })
+            console.log(currentFolderDrag)
+            currentFolderToDrop.folders = currentFolderDrag.folders
+            this.props.updateFolderReducer(statusCopy)
+        }, 0)
+    }
+
+
+    /**
+     * Add hover class when enter folder
+     * @param e
+     */
+    private dragFolderEnter(e: any) {
+        const classNames = e.target.className.split(' ')
+        console.log(classNames[0].split('-'))
+        if (classNames[0].split('-')[0] === 'folder') {
+            if (!classNames.find((c: string) => c === 'hover'))
+                e.target.className = e.target.className + ' hover'
+        }
+    }
+
+    /**
+     * Remove hover class when leave folder
+     * @param e
+     */
+    private dragFolderLeave(e: any) {
+        console.log(e.target.className)
+        e.target.className = e.target.className.replace(' hover', '')
+    }
 }
 
 function mapStateToProps(state: any) {
@@ -316,6 +383,7 @@ function mapStateToProps(state: any) {
         createFolder: state.documentRedux.createFolder,
         treeView: state.fileStorageRedux
     };
+
 }
 
 function mapDispatchToProps(dispatch: any) {
@@ -329,4 +397,4 @@ function mapDispatchToProps(dispatch: any) {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(VisualizationFoldersComponent);
+export default connect(mapStateToProps, mapDispatchToProps)(CommonsFoldersComponent);

@@ -1,6 +1,10 @@
 import React, {Component, HTMLAttributes} from 'react';
-import VisualizationFoldersComponent from "../../commons/folders/visualization-folders/visualization-folders.component";
+import VisualizationFoldersComponent from "../../commons/folders/visualization-folders/commons-folders.component";
 import {connect} from "react-redux";
+
+import './list-folder.component.scss'
+import ResizeComponent from "../../commons/folders/resize/resize.component";
+
 interface IListFoldersProps {
     createFolder: any,
     addImage: any
@@ -21,10 +25,12 @@ class ListFoldersComponent extends Component<IListFoldersProps> {
 
     render() {
         return (
-            <div>
-                <div className="root-folder">
+            <div className={'container'}>
+                <div id={'root-folder'} className="root-folder">
                     <VisualizationFoldersComponent />
+
                 </div>
+                <ResizeComponent />
             </div>
         );
     }

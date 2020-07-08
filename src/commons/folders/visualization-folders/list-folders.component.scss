@@ -1,8 +1,6 @@
 .root-folder {
-  min-width: 350px;
-  max-width: 960px;
-  margin: 0 auto;
   overflow: auto;
+  width: 100%;
 }
 /* all levels */
 .tree-view-folders a {
@@ -27,14 +25,17 @@
 
   a {
     display: block;
-    margin: 0 50px;
+    margin: 5px 50px;
     line-height: 3;
     cursor: pointer;
+    width: 100%;
     & > img {
       padding: 0 10px 0 10px;
+      margin: 5px 0;
     }
     &[class*="folder-"] {
       padding: 0 0 0 55px;
+      min-width: 100px;
       margin: 0;
       background: url("../../../../public/assets/images/icons8-folder.svg") no-repeat 5px 2px;
 
@@ -50,4 +51,29 @@
 .tree-view-folders ul {
   margin: 0 50px;
   padding: 0 ;
+}
+@media screen and (max-width: 600px){
+  .tree-view-folders {
+  ul{
+      margin: 0 30px;
+    li {
+      a {
+        height: 45px;
+
+        &[class*="folder-"] {
+          background-size: 35px;
+          padding: 0 0 0 48px;
+
+          &.open {
+            background-size: 35px;
+            padding: 0 0 0 48px;
+
+            img {
+            }
+          }
+        }
+      }
+    }
+    }
+  }
 }

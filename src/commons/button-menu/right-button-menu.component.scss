@@ -8,7 +8,7 @@
   cursor: pointer;
   font-size: 15px;
   position: absolute;
-
+  z-index: 100;
   .context-item {
     border-bottom: dotted 1px #ccc;
     padding: 5px 25px;
@@ -26,3 +26,4 @@
 
   }
 }
+

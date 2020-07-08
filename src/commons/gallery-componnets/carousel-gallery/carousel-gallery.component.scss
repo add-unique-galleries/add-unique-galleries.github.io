@@ -33,3 +33,25 @@
     }
   }
 }
+@media screen and (max-width: 600px){
+  .container-gallery {
+    #gallery {
+      .prev-btn {
+        left: 8px;
+      }
+      .next-btn {
+        right: 8px;
+      }
+    }
+  }
+}
+@media screen and (max-width: 426px){
+
+  .container-gallery {
+    #gallery {
+      .delete-image {
+        left: 77%;
+      }
+    }
+  }
+}

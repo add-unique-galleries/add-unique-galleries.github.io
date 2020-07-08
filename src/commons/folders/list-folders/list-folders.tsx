@@ -1,13 +1,17 @@
 import React, {Component} from 'react';
 import ListImages from "../list-images/list-images";
-import CreateFolderComponent from "../create-folder/create-folder.component";
-import {IPhotos} from "../../../models/gallery.interfaces";
+
+import './list-folder-images.component.scss'
 
 interface IListFoldersProps {
     folders: Array<any>,
     openFolder: any,
     addIdOnFolderForTiger: any
     addMoreItems: any
+    dragStart: any
+    dragEnd: any
+    dragEnter: any
+    dragLeave: any
 }
 
 class ListFolders extends Component<IListFoldersProps> {
@@ -25,11 +29,15 @@ class ListFolders extends Component<IListFoldersProps> {
      * @param folders
      */
     private treeView(folders: Array<any>) {
-        return (<ul>
+        return (<ul draggable={"true"}
+                    onDragStart={this.props.dragStart}
+                    onDragEnd={this.props.dragEnd}
+                    onDragEnter={this.props.dragEnter}
+                    onDragLeave={this.props.dragLeave}>
             {folders.map((folder, index) => {
                 return (<li id={'parent-' + index} key={Math.random()} >
                     <a className={folder.classTarget} onContextMenu={this.props.addIdOnFolderForTiger} onClick={() => this.props.openFolder(folder.id)}
-                       >{folder.label}</a>
+                       draggable={"true"}>{folder.label}</a>
                     {folder.folders.length > 0 && folder.isOpen && this.treeView(folder.folders)}
                     {folder.isOpen &&  <ListImages files={folder.files}/>}
                 </li>)
@@ -37,6 +45,8 @@ class ListFolders extends Component<IListFoldersProps> {
             }) }
         </ul>)
     }
+
+
 }
 
 export default ListFolders;

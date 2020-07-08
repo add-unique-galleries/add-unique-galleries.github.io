@@ -16,10 +16,10 @@ class ListImages extends Component<IListImagesProps> {
         const {files} = this.props
         return (
             this.props.files.map((file: IPhotos, index) => {
-                return <div key={Math.random()}><a
+                return <div key={Math.random()} className={'image-container'} draggable={"true"}><a
                     className={'image-list'}
                     onClick={() => this.openImage(file, files)}>
-                    <img src={file.src} alt={file.label}/>{file.label}
+                    <img src={file.src} alt={file.label}/><span>{file.label}</span>
                 </a>
                 </div>
             })

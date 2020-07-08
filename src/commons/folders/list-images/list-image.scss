@@ -1,4 +1,22 @@
-.image-list > img {
-  margin-top: 5px;
-  width: 40px;
+
+.image-container {
+  display: grid;
+  max-width: 280px;
+  .image-list {
+    display: inline-grid;
+    grid-template-areas: 'left right';
+    max-width: max-content;
+    grid-row-gap: 5px;
+    img {
+      margin-top: 5px;
+      width: 40px;
+      grid-area: left;
+    }
+
+    span {
+      width: auto;
+      grid-area: right;
+      max-width: 100px;
+    }
+  }
 }
